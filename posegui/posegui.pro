@@ -2,7 +2,7 @@ TARGET = posegui
 TEMPLATE = app
 CONFIG += link_prl
 
-SOURCES += src/main2.cpp \
+SOURCES += src/main.cpp \
     src/depthcamera/depthcamera.cpp \
     src/depthcamera/depthcameradimager.cpp \
     src/depthcamera/depthcamerakinectsdk.cpp \

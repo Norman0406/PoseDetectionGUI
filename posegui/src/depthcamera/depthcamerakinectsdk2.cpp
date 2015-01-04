@@ -14,7 +14,7 @@ DepthCameraKinectSDK2::~DepthCameraKinectSDK2()
     close();
 }
 
-bool DepthCameraKinectSDK2::open()
+bool DepthCameraKinectSDK2::iOpen()
 {
     if (FAILED(GetDefaultKinectSensor(&m_sensor)))
         return false;
@@ -64,7 +64,7 @@ bool DepthCameraKinectSDK2::open()
     return true;
 }
 
-void DepthCameraKinectSDK2::close()
+void DepthCameraKinectSDK2::iClose()
 {
     if (m_processThread) {
         m_terminate = true;
@@ -100,11 +100,11 @@ void DepthCameraKinectSDK2::processDepth()
 
                         std::unique_lock<std::mutex> lock(m_depthMapMutex);
 
-                        memset(m_depthBuffer, 0, m_depthDataSize);
-                        memset(m_pointsBuffer, 0, m_pointsDataSize);
+                        memset(m_depthBuffer, 0, m_width * m_height * sizeof(float));
+                        memset(m_pointsBuffer, 0, m_width * m_height * 3 * sizeof(float));
 
-                        float* bufferRunDepthData = m_depthData;
-                        float* bufferRunPointsData = m_pointsData;
+                        float* bufferRunDepthData = m_depthBuffer;
+                        float* bufferRunPointsData = m_pointsBuffer;
                         for (int i = 0; i < m_height; i++) {
                             for (int j = 0; j < m_width; j++) {
                                 // set depth value
@@ -166,8 +166,8 @@ void DepthCameraKinectSDK2::iWaitForData()
     while (!m_depthMapReady)
         m_depthMapReadyCond.wait(lock);
 
-    memcpy(m_depthBuffer, m_depthData, m_depthDataSize);
-    memcpy(m_pointsBuffer, m_pointsData, m_pointsDataSize);
+    memcpy(m_depthData, m_depthBuffer, m_depthDataSize * sizeof(float));
+    memcpy(m_pointsData, m_pointsBuffer, m_pointsDataSize * sizeof(float));
 
     m_depthMapReady = false;
 }

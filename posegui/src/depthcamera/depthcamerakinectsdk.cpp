@@ -79,10 +79,11 @@ void DepthCameraKinectSDK::processDepth()
 
             std::unique_lock<std::mutex> lock(m_depthMapMutex);
 
-            memset(m_depthBuffer, 0, m_depthDataSize);
-            memset(m_pointsBuffer, 0, m_pointsDataSize);
+            memset(m_depthBuffer, 0, m_width * m_height * sizeof(float));
+            memset(m_pointsBuffer, 0, m_width * m_height * 3 * sizeof(float));
 
-            float* bufferRunDepthData = m_depthData;
+            float* bufferRunDepthData = m_depthBuffer;
+            float* bufferRunPointsData = m_pointsBuffer;
             for (int i = 0; i < m_height; i++) {
                 for (int j = 0; j < m_width; j++) {
                     NUI_DEPTH_IMAGE_PIXEL depthPixel = *bufferRun++;
@@ -91,6 +92,7 @@ void DepthCameraKinectSDK::processDepth()
                     // TODO: get point cloud
 
                     bufferRunDepthData++;
+                    bufferRunPointsData+=3;
                 }
             }
 
@@ -110,8 +112,8 @@ void DepthCameraKinectSDK::iWaitForData()
     while (!m_depthMapReady)
         m_depthMapReadyCond.wait(lock);
 
-    memcpy(m_depthBuffer, m_depthData, m_depthDataSize);
-    memcpy(m_pointsBuffer, m_pointsData, m_pointsDataSize);
+    memcpy(m_depthData, m_depthBuffer, m_depthDataSize * sizeof(float));
+    memcpy(m_pointsData, m_pointsBuffer, m_pointsDataSize * sizeof(float));
 
     m_depthMapReady = false;
 }

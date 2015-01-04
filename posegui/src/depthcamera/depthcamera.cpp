@@ -34,6 +34,7 @@ bool DepthCamera::open()
 
 void DepthCamera::close()
 {
+    iClose();
 
     m_width = 0;
     m_height = 0;
@@ -41,8 +42,6 @@ void DepthCamera::close()
     m_depthData = 0;
     delete[] m_pointsData;
     m_pointsData = 0;
-
-    iClose();
 }
 
 void DepthCamera::waitForData()
