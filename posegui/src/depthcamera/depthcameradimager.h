@@ -3,17 +3,12 @@
 
 #include "depthcamera.h"
 
-namespace pose
-{
 class DepthCameraDImager
         : public DepthCamera
 {
 public:
     DepthCameraDImager();
     ~DepthCameraDImager();
-
-    bool open();
-    void close();
 
     bool setFrequency(int frq);
     bool getFrequency(int& frq) const;
@@ -27,15 +22,14 @@ public:
     void setThreshold(int threshold);
     int getThreshold() const;
 
-    cv::Size getDepthSize() const;
-
 protected:
+    bool iOpen();
+    void iClose();
     void iWaitForData();
 
 private:
     void depthTo3D(int u, int v, float D, float& x, float& y, float& z);
 
-    cv::Size m_depthSize;
     bool m_isInit;
     unsigned short m_grayThreshold;
 
@@ -50,6 +44,5 @@ private:
     static const int m_k;
     static const float m_f;
 };
-}
 
 #endif // DEPTHCAMERADIMAGER_H

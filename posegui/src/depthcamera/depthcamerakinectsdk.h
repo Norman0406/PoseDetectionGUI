@@ -8,8 +8,6 @@
 #include <mutex>
 #include <condition_variable>
 
-namespace pose
-{
 class DepthCameraKinectSDK
         : public DepthCamera
 {
@@ -17,10 +15,9 @@ public:
     DepthCameraKinectSDK();
     ~DepthCameraKinectSDK();
 
-    bool open();
-    void close();
-
 protected:
+    bool iOpen();
+    void iClose();
     void iWaitForData();
 
 private:
@@ -37,9 +34,8 @@ private:
     std::mutex m_depthMapMutex;
     std::condition_variable m_depthMapReadyCond;
     bool m_depthMapReady;
-    cv::Mat m_depthMapBuffer;
-    cv::Mat m_pointCloudBuffer;
+    float* m_depthBuffer;
+    float* m_pointsBuffer;
 };
-}
 
 #endif // DEPTHCAMERAKINECTSDK_H

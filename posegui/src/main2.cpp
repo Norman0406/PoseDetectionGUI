@@ -1,25 +1,29 @@
 #include <iostream>
 #include <pose.h>
+#include <depthcamera/depthcameradimager.h>
+#include <depthcamera/depthcamerakinectsdk.h>
+#include <depthcamera/depthcamerakinectsdk2.h>
 
 using namespace std;
 
 void main()
 {
-    int width = 512;
-    int height = 414;
-
-    PoseContext* context = 0;
-    if (poseInit(&context, width, height) != RESULT_SUCCESS || context == 0)
+    DepthCamera* camera = new DepthCameraDImager();
+    if (!camera->open())
         return;
 
-    int depthDataSize = width * height;
-    float* depthData = new float[depthDataSize];
+    PoseContext* context = 0;
+    if (poseInit(&context, camera->getWidth(), camera->getHeight()) != RESULT_SUCCESS || context == 0)
+        return;
 
-    int pointsDataSize = width * height * 3;
-    float* pointsData = new float[pointsDataSize];
+    int depthDataSize = 0;
+    float* depthData = camera->getDepthData(depthDataSize);
+
+    int pointsDataSize = 0;
+    float* pointsData = camera->getPointsData(pointsDataSize);
 
     // set input data and process data
-    if (poseSetInput(context, depthData, depthDataSize * sizeof(float), pointsData, pointsDataSize * sizeof(float)) != RESULT_SUCCESS)
+    if (poseSetInput(context, depthData, depthDataSize, pointsData, pointsDataSize) != RESULT_SUCCESS)
         return;
 
     // get data
@@ -34,4 +38,7 @@ void main()
     delete[] pointsData;
 
     poseShutdown(context);
+
+    camera->close();
+    delete camera;
 }

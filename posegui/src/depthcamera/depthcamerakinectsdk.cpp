@@ -1,9 +1,12 @@
 #include "depthcamerakinectsdk.h"
+#include <string.h>
 
-namespace pose
-{
 DepthCameraKinectSDK::DepthCameraKinectSDK()
-    : m_sensor(0), m_processThread(0), m_terminate(false)
+    : m_sensor(0),
+      m_processThread(0),
+      m_terminate(false),
+      m_depthBuffer(0),
+      m_pointsBuffer(0)
 {
 }
 
@@ -12,7 +15,7 @@ DepthCameraKinectSDK::~DepthCameraKinectSDK()
     close();
 }
 
-bool DepthCameraKinectSDK::open()
+bool DepthCameraKinectSDK::iOpen()
 {
     NuiInitialize(NUI_INITIALIZE_FLAG_USES_DEPTH);
 
@@ -30,12 +33,12 @@ bool DepthCameraKinectSDK::open()
     DWORD width = 0, height = 0;
     NuiImageResolutionToSize(NUI_IMAGE_RESOLUTION_640x480, width, height);
 
-    m_depthMap = cv::Mat(height, width, CV_32F);
-    m_depthMapBuffer = cv::Mat(height, width, CV_32F);
+    m_pointsBuffer = new float[height * width * 3];
+    m_depthBuffer = new float[height * width];
     m_depthMapReady = false;
 
-    m_pointCloud = cv::Mat(height, width, CV_32FC3);
-    m_pointCloudBuffer = cv::Mat(height, width, CV_32FC3);
+    m_width = width;
+    m_height = height;
 
     m_terminate = false;
     m_processThread = new std::thread(std::bind(&DepthCameraKinectSDK::processDepth, this));
@@ -43,7 +46,7 @@ bool DepthCameraKinectSDK::open()
     return true;
 }
 
-void DepthCameraKinectSDK::close()
+void DepthCameraKinectSDK::iClose()
 {
     if (m_processThread) {
         m_terminate = true;
@@ -52,6 +55,9 @@ void DepthCameraKinectSDK::close()
     }
 
     m_sensor->Release();
+
+    delete[] m_depthBuffer;
+    delete[] m_pointsBuffer;
 }
 
 void DepthCameraKinectSDK::processDepth()
@@ -73,16 +79,18 @@ void DepthCameraKinectSDK::processDepth()
 
             std::unique_lock<std::mutex> lock(m_depthMapMutex);
 
-            m_depthMapBuffer.setTo(0);
-            m_pointCloudBuffer.setTo(0);
+            memset(m_depthBuffer, 0, m_depthDataSize);
+            memset(m_pointsBuffer, 0, m_pointsDataSize);
 
-            for (int i = 0; i < m_depthMapBuffer.rows; i++) {
-                float* row = m_depthMapBuffer.ptr<float>(i);
-                for (int j = 0; j < m_depthMapBuffer.cols; j++) {
+            float* bufferRunDepthData = m_depthData;
+            for (int i = 0; i < m_height; i++) {
+                for (int j = 0; j < m_width; j++) {
                     NUI_DEPTH_IMAGE_PIXEL depthPixel = *bufferRun++;
-                    row[j] = (float)(depthPixel.depth / 1000.0f);
+                    *bufferRunDepthData = (float)(depthPixel.depth / 1000.0f);
 
                     // TODO: get point cloud
+
+                    bufferRunDepthData++;
                 }
             }
 
@@ -102,9 +110,8 @@ void DepthCameraKinectSDK::iWaitForData()
     while (!m_depthMapReady)
         m_depthMapReadyCond.wait(lock);
 
-    m_depthMapBuffer.copyTo(m_depthMap);
-    m_pointCloudBuffer.copyTo(m_pointCloud);
+    memcpy(m_depthBuffer, m_depthData, m_depthDataSize);
+    memcpy(m_pointsBuffer, m_pointsData, m_pointsDataSize);
 
     m_depthMapReady = false;
-}
 }

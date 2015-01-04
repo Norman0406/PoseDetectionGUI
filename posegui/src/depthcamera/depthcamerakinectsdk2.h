@@ -8,8 +8,6 @@
 #include <mutex>
 #include <condition_variable>
 
-namespace pose
-{
 class DepthCameraKinectSDK2
         : public DepthCamera
 {
@@ -17,17 +15,15 @@ public:
     DepthCameraKinectSDK2();
     ~DepthCameraKinectSDK2();
 
-    bool open();
-    void close();
-
     float getMinReliableDistance() const;
     float getMaxReliableDistance() const;
     float getFOVHorizontal() const;
     float getFOVVertical() const;
     float getFOVDiagonal() const;
-    cv::Size getDepthSize() const;
 
-protected:
+protected:    
+    bool iOpen();
+    void iClose();
     void iWaitForData();
 
 private:
@@ -45,7 +41,6 @@ private:
     float m_fovHorizontal;
     float m_fovVertical;
     float m_fovDiagonal;
-    cv::Size m_depthSize;
 
     std::thread* m_processThread;
     std::mutex m_terminateMutex;
@@ -54,9 +49,8 @@ private:
     std::mutex m_depthMapMutex;
     std::condition_variable m_depthMapReadyCond;
     bool m_depthMapReady;
-    cv::Mat m_depthMapBuffer;
-    cv::Mat m_pointCloudBuffer;
+    float* m_depthBuffer;
+    float* m_pointsBuffer;
 };
-}
 
 #endif // DEPTHCAMERAKINECTSDK2_H

@@ -1,8 +1,7 @@
 #include "depthcameradimager.h"
 #include "Dimagerdll.h"
+#include <math.h>
 
-namespace pose
-{
 const float DepthCameraDImager::m_sx    = 0.000024f;
 const float DepthCameraDImager::m_sy    = 0.000024f;
 const int DepthCameraDImager::m_uc      = 80;
@@ -13,7 +12,8 @@ const float DepthCameraDImager::m_f     = 0.00396f;
 DepthCameraDImager::DepthCameraDImager()
     : m_kdat(0), m_ndat(0)
 {
-    m_depthSize = cv::Size(160, 120);
+    m_width = 160;
+    m_height = 120;
     m_isInit = false;
 }
 
@@ -22,7 +22,7 @@ DepthCameraDImager::~DepthCameraDImager()
     close();
 }
 
-bool DepthCameraDImager::open()
+bool DepthCameraDImager::iOpen()
 {
     int ret = InitImageDriver();
     if (ret != 0)
@@ -44,16 +44,13 @@ bool DepthCameraDImager::open()
     // set a default grayscale threshold to filter out noise
     setThreshold(5);
 
-    m_depthMap = cv::Mat(m_depthSize.height, m_depthSize.width, CV_32F);
-    m_pointCloud = cv::Mat(m_depthSize.height, m_depthSize.width, CV_32FC3);
-
-    m_kdat = new unsigned short[m_depthSize.width * m_depthSize.height];
-    m_ndat = new unsigned short[m_depthSize.width * m_depthSize.height];
+    m_kdat = new unsigned short[m_width * m_height];
+    m_ndat = new unsigned short[m_width * m_height];
 
     return true;
 }
 
-void DepthCameraDImager::close()
+void DepthCameraDImager::iClose()
 {
     if (m_isInit) {
         FreeImageDriver();
@@ -174,11 +171,6 @@ int DepthCameraDImager::getThreshold() const
     return m_grayThreshold;
 }
 
-cv::Size DepthCameraDImager::getDepthSize() const
-{
-    return m_depthSize;
-}
-
 void DepthCameraDImager::depthTo3D(int u, int v, float D, float& x, float& y, float& z)
 {
     float tempU = (m_sx * m_sx) * ((u - m_uc) * (u - m_uc));
@@ -196,31 +188,31 @@ void DepthCameraDImager::depthTo3D(int u, int v, float D, float& x, float& y, fl
 
 void DepthCameraDImager::iWaitForData()
 {
-    m_depthMap.setTo(0);
-    m_pointCloud.setTo(0);
-
     if (GetImageKN(m_kdat, m_ndat) == 0) {
         const unsigned short* bufferRunDepth = m_kdat;
         const unsigned short* bufferRunGray = m_ndat;
-        for (int i = 0; i < m_depthMap.rows; i++) {
-            float* depthRow = m_depthMap.ptr<float>(i);
-            cv::Vec3f* pointCloudRow = m_pointCloud.ptr<cv::Vec3f>(i);
-            for (int j = 0; j < m_depthMap.cols; j++) {
+        float* bufferRunDepthData = m_depthData;
+        float* bufferRunPointsData = m_pointsData;
+
+        for (int i = 0; i < m_height; i++) {
+            for (int j = 0; j < m_width; j++) {
+
                 unsigned short gray = *bufferRunGray;
 
                 if (gray > 5) {
                     // set depth value
                     float depth = *bufferRunDepth / 100.0f;
-                    depthRow[j] = depth;
+                    *bufferRunDepthData = depth;
 
                     // set point in point cloud
-                    depthTo3D(j, i, depth, pointCloudRow[j][0], pointCloudRow[j][1], pointCloudRow[j][2]);
+                    depthTo3D(j, i, depth, bufferRunPointsData[0], bufferRunPointsData[1], bufferRunPointsData[2]);
                 }
 
                 bufferRunDepth++;
                 bufferRunGray++;
+                bufferRunDepthData++;
+                bufferRunPointsData+=3;
             }
         }
     }
-}
 }
