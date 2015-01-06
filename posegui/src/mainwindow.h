@@ -2,8 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "depthcamerakinectsdk.h"
-#include "depthcamerakinectsdk2.h"
+#include "camerathread.h"
+
+namespace Ui {
+    class MainWindow;
+}
 
 class MainWindow : public QMainWindow
 {
@@ -14,7 +17,8 @@ public:
     ~MainWindow();
 
 private:
-    DepthCamera* m_camera;
+    Ui::MainWindow* ui;
+    QThread* m_cameraThread;
 };
 
 #endif // MAINWINDOW_H

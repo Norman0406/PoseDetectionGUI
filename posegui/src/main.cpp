@@ -1,5 +1,17 @@
+/*#include <QApplication>
+#include "mainwindow.h"
+
+int main(int argc, char *argv[])
+{
+    QApplication application(argc, argv);
+    MainWindow window;
+    window.show();
+    return application.exec();
+}*/
+
 #include <iostream>
 #include <pose.h>
+#include <depthcamera/depthcameradummy.h>
 #include <depthcamera/depthcameradimager.h>
 #include <depthcamera/depthcamerakinectsdk.h>
 #include <depthcamera/depthcamerakinectsdk2.h>
@@ -8,7 +20,7 @@ using namespace std;
 
 void main()
 {
-    DepthCamera* camera = new DepthCameraKinectSDK2();
+    DepthCamera* camera = new DepthCameraDummy();
     if (!camera->open())
         return;
 

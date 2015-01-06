@@ -1,17 +1,29 @@
-TARGET = posegui
 TEMPLATE = app
-CONFIG += link_prl
+CONFIG += link_prl qt
+QT += core gui widgets
+TARGET = posegui
 
 SOURCES += src/main.cpp \
+    src/mainwindow.cpp \
+    src/imageviewer.cpp \
     src/depthcamera/depthcamera.cpp \
+    src/depthcamera/depthcameradummy.cpp \
     src/depthcamera/depthcameradimager.cpp \
     src/depthcamera/depthcamerakinectsdk.cpp \
-    src/depthcamera/depthcamerakinectsdk2.cpp
+    src/depthcamera/depthcamerakinectsdk2.cpp \
+    src/camerathread.cpp
 
-HEADERS += src/depthcamera/depthcamera.h \
+HEADERS += src/mainwindow.h \
+    src/imageviewer.h \
+    src/depthcamera/depthcamera.h \
+    src/depthcamera/depthcameradummy.h \
     src/depthcamera/depthcameradimager.h \
     src/depthcamera/depthcamerakinectsdk.h \
-    src/depthcamera/depthcamerakinectsdk2.h
+    src/depthcamera/depthcamerakinectsdk2.h \
+    src/camerathread.h
+
+FORMS += \
+    src/mainwindow.ui
 
 INCLUDEPATH += $${_PRO_FILE_PWD_}/src \
     $${_PRO_FILE_PWD_}/external/include \
