@@ -46,8 +46,8 @@ void DepthCamera::close()
 
 void DepthCamera::waitForData()
 {
-    memset(m_depthData, 0, m_depthDataSize);
-    memset(m_pointsData, 0, m_pointsDataSize);
+    memset(m_depthData, 0, m_depthDataSize * sizeof(float));
+    memset(m_pointsData, 0, m_pointsDataSize * sizeof(float));
 
     iWaitForData();
 }

@@ -206,6 +206,7 @@ void DepthCameraDImager::iWaitForData()
 
                     // set point in point cloud
                     depthTo3D(j, i, depth, bufferRunPointsData[0], bufferRunPointsData[1], bufferRunPointsData[2]);
+                    bufferRunPointsData[1] *= -1;
                 }
 
                 bufferRunDepth++;
