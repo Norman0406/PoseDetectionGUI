@@ -3,8 +3,9 @@
 
 #include <QWidget>
 #include <QPixmap>
+#include <QLabel>
 
-class ImageViewer : public QWidget
+class ImageViewer : public QLabel
 {
     Q_OBJECT
 
@@ -13,7 +14,7 @@ public:
     ~ImageViewer();
 
 public slots:
-    void setData(const float* data, int dataSize);
+    void setData(const QImage& image);
 
 private:
     QPixmap m_data;

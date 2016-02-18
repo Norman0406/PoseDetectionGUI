@@ -1,4 +1,4 @@
-/*#include <QApplication>
+#include <QApplication>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
@@ -7,9 +7,9 @@ int main(int argc, char *argv[])
     MainWindow window;
     window.show();
     return application.exec();
-}*/
+}
 
-#include <iostream>
+/*#include <iostream>
 #include <pose.h>
 #include <depthcamera/depthcameradummy.h>
 #include <depthcamera/depthcameradimager.h>
@@ -20,6 +20,8 @@ using namespace std;
 
 void main()
 {
+
+
     DepthCamera* camera = new DepthCameraDummy();
     //DepthCamera* camera = new DepthCameraDImager();
     //DepthCamera* camera = new DepthCameraKinectSDK2();
@@ -56,4 +58,4 @@ void main()
 
     camera->close();
     delete camera;
-}
+}*/

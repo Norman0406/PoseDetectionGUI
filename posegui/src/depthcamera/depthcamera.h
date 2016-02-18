@@ -1,10 +1,15 @@
 #ifndef DEPTHCAMERA_H
 #define DEPTHCAMERA_H
 
+#include <QObject>
+
 class DepthCamera
+        : public QObject
 {
+    Q_OBJECT
+
 public:
-    ~DepthCamera();
+    virtual ~DepthCamera();
 
     bool open();
     void close();
@@ -17,7 +22,7 @@ public:
     float* getPointsData(int& pointsDataSize) const;
 
 protected:
-    DepthCamera();
+    explicit DepthCamera(QObject* parent = 0);
 
     virtual bool iOpen() = 0;
     virtual void iClose() = 0;

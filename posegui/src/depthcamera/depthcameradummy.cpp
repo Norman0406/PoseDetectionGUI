@@ -1,6 +1,7 @@
 #include "depthcameradummy.h"
 
-DepthCameraDummy::DepthCameraDummy()
+DepthCameraDummy::DepthCameraDummy(QObject* parent)
+    : DepthCamera(parent)
 {
 }
 

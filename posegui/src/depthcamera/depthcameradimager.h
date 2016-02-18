@@ -6,8 +6,10 @@
 class DepthCameraDImager
         : public DepthCamera
 {
+    Q_OBJECT
+
 public:
-    DepthCameraDImager();
+    DepthCameraDImager(QObject* parent = 0);
     ~DepthCameraDImager();
 
     bool setFrequency(int frq);

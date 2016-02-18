@@ -6,8 +6,10 @@
 class DepthCameraDummy
         : public DepthCamera
 {
+    Q_OBJECT
+
 public:
-    DepthCameraDummy();
+    DepthCameraDummy(QObject* parent = 0);
     ~DepthCameraDummy();
 
 protected:

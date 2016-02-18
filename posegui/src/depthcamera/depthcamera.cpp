@@ -1,8 +1,9 @@
 #include "depthcamera.h"
 #include <string.h>
 
-DepthCamera::DepthCamera()
-    : m_width(0),
+DepthCamera::DepthCamera(QObject* parent)
+    : QObject(parent),
+      m_width(0),
       m_height(0),
       m_depthData(0),
       m_pointsData(0)

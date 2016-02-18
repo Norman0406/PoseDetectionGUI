@@ -9,8 +9,10 @@ const int DepthCameraDImager::m_vc      = 60;
 const int DepthCameraDImager::m_k       = -36120;
 const float DepthCameraDImager::m_f     = 0.00396f;
 
-DepthCameraDImager::DepthCameraDImager()
-    : m_kdat(0), m_ndat(0)
+DepthCameraDImager::DepthCameraDImager(QObject* parent)
+    : DepthCamera(parent),
+      m_kdat(0),
+      m_ndat(0)
 {
     m_width = 160;
     m_height = 120;

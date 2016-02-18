@@ -11,8 +11,10 @@
 class DepthCameraKinectSDK2
         : public DepthCamera
 {
+    Q_OBJECT
+
 public:
-    DepthCameraKinectSDK2();
+    DepthCameraKinectSDK2(QObject* parent = 0);
     ~DepthCameraKinectSDK2();
 
     float getMinReliableDistance() const;

@@ -1,8 +1,9 @@
 #include "depthcamerakinectsdk.h"
 #include <string.h>
 
-DepthCameraKinectSDK::DepthCameraKinectSDK()
-    : m_sensor(0),
+DepthCameraKinectSDK::DepthCameraKinectSDK(QObject* parent)
+    : DepthCamera(parent),
+      m_sensor(0),
       m_processThread(0),
       m_terminate(false),
       m_depthBuffer(0),

@@ -11,8 +11,10 @@
 class DepthCameraKinectSDK
         : public DepthCamera
 {
+    Q_OBJECT
+
 public:
-    DepthCameraKinectSDK();
+    DepthCameraKinectSDK(QObject* parent = 0);
     ~DepthCameraKinectSDK();
 
 protected:
